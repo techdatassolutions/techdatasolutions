@@ -82,19 +82,80 @@ ul { list-style: none; }
 ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
 
 /* ============================================
-   GRID BACKGROUND HERO
+   HERO — CANVAS + VISUAL IMPACT
 ============================================ */
-.grid-bg {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(0,123,255,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,123,255,0.06) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+#hero-canvas {
+  position: absolute; inset: 0; z-index: 0;
+  width: 100%; height: 100%;
 }
-.noise-overlay {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.025;
+.noise-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.hero-glow-1 {
+  position: absolute; width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,123,255,0.22) 0%, transparent 65%);
+  top: -180px; left: -180px; pointer-events: none; z-index: 1;
+  animation: floatGlow 9s ease-in-out infinite;
+}
+.hero-glow-2 {
+  position: absolute; width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,212,255,0.16) 0%, transparent 65%);
+  bottom: -120px; right: -120px; pointer-events: none; z-index: 1;
+  animation: floatGlow 12s ease-in-out infinite reverse;
+}
+.hero-glow-3 {
+  position: absolute; width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,80,200,0.14) 0%, transparent 65%);
+  top: 40%; left: 50%; transform: translate(-50%,-50%);
+  pointer-events: none; z-index: 1;
+  animation: floatGlow 7s ease-in-out infinite 2s;
+}
+@keyframes floatGlow {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50%      { transform: translate(25px,-25px) scale(1.08); }
+}
+.hero-glow-3 { animation: floatGlow3 7s ease-in-out infinite 2s; }
+@keyframes floatGlow3 {
+  0%,100% { transform: translate(-50%,-50%) scale(1); }
+  50%      { transform: translate(-50%,-50%) scale(1.1); }
+}
+
+/* Floating tech badges */
+.tech-badge-float {
+  position: absolute; z-index: 3; pointer-events: none;
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(10,15,30,0.55);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 50px;
+  padding: 8px 14px;
+  font-size: 0.76rem; font-weight: 600; color: var(--muted);
+  white-space: nowrap;
+  animation: floatBadge var(--fb-dur,6s) ease-in-out infinite var(--fb-delay,0s);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+  transition: border-color 0.3s, color 0.3s;
+}
+.tech-badge-float .dot-b { width:7px;height:7px;border-radius:50%;flex-shrink:0; }
+@keyframes floatBadge {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-10px); }
+}
+/* Ocultar badges en mobile para no tapar contenido */
+@media (max-width: 1024px) {
+  .tech-badge-float { display: none !important; }
+}
+
+/* Animated ring */
+.hero-ring {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
+  border: 1px solid rgba(0,212,255,0.08);
+  animation: ringPulse 4s ease-in-out infinite;
+}
+@keyframes ringPulse {
+  0%   { transform: translate(-50%,-50%) scale(0.95); opacity: 0.4; }
+  50%  { transform: translate(-50%,-50%) scale(1.05); opacity: 0.9; }
+  100% { transform: translate(-50%,-50%) scale(0.95); opacity: 0.4; }
 }
 
 /* ============================================
@@ -198,8 +259,9 @@ ul { list-style: none; }
   min-height: 100vh;
   display: flex; align-items: center; justify-content: center;
   text-align: center;
-  padding: 120px 24px 80px;
+  padding: 130px 24px 90px;
   overflow: hidden;
+  isolation: isolate;
 }
 .hero-glow-1 {
   position: absolute; width: 600px; height: 600px;
@@ -217,7 +279,58 @@ ul { list-style: none; }
   0%, 100% { transform: translate(0,0) scale(1); }
   50% { transform: translate(30px, -30px) scale(1.1); }
 }
-.hero-content { position: relative; z-index: 1; max-width: 860px; }
+.hero-content { position: relative; z-index: 3; max-width: 900px; }
+
+/* Typing cursor on subtitle */
+.hero-subtitle-wrap { position: relative; display: inline-block; }
+.cursor-blink { 
+  display: inline-block; width: 2px; height: 1.1em;
+  background: var(--cyan); margin-left: 3px; vertical-align: middle;
+  animation: cursorBlink 1s step-end infinite;
+}
+@keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Glowing CTA button */
+.btn-primary {
+  position: relative; overflow: hidden;
+}
+.btn-primary::after {
+  content:''; position:absolute; inset:-2px; border-radius:50px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 3s ease-in-out infinite 1s;
+}
+@keyframes shimmer { to { transform: translateX(200%); } }
+
+/* Stats with counter animation */
+.stat-num { 
+  font-family: var(--font-head);
+  font-size: 2.4rem; font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+}
+.hero-stats {
+  display: flex; gap: 0; flex-wrap: wrap;
+  justify-content: center; margin-top: 64px;
+  position: relative; z-index: 3;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  padding: 24px 40px;
+  max-width: 780px; margin: 56px auto 0;
+}
+.stat-item {
+  flex: 1; min-width: 130px; padding: 12px 20px;
+  position: relative; text-align: center;
+}
+.stat-item:not(:last-child)::after {
+  content: ''; position: absolute; right: 0; top: 20%; height: 60%;
+  width: 1px; background: var(--border);
+}
+.stat-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; margin-top: 6px; }
 .hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
   background: rgba(0,212,255,0.1);
@@ -753,31 +866,64 @@ footer p { color: var(--muted); font-size: 0.85rem; }
      HERO
 ============================================ -->
 <section id="hero" aria-label="Inicio">
-  <div class="grid-bg" aria-hidden="true"></div>
+
+  <!-- Canvas de partículas interactivas -->
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+
+  <!-- Glows de fondo -->
   <div class="hero-glow-1" aria-hidden="true"></div>
   <div class="hero-glow-2" aria-hidden="true"></div>
+  <div class="hero-glow-3" aria-hidden="true"></div>
 
-  <!-- Particles -->
-  <div class="particle" style="width:4px;height:4px;background:var(--cyan);top:20%;left:10%;--dur:7s;" aria-hidden="true"></div>
-  <div class="particle" style="width:6px;height:6px;background:var(--primary);top:40%;right:8%;--dur:9s;" aria-hidden="true"></div>
-  <div class="particle" style="width:3px;height:3px;background:var(--cyan);top:70%;left:15%;--dur:6s;" aria-hidden="true"></div>
-  <div class="particle" style="width:5px;height:5px;background:var(--primary);top:30%;right:20%;--dur:11s;" aria-hidden="true"></div>
-  <div class="particle" style="width:4px;height:4px;background:var(--cyan);bottom:20%;right:30%;--dur:8s;" aria-hidden="true"></div>
+  <!-- Anillos decorativos -->
+  <div class="hero-ring" style="width:500px;height:500px;top:50%;left:50%;animation-delay:0s;" aria-hidden="true"></div>
+  <div class="hero-ring" style="width:700px;height:700px;top:50%;left:50%;animation-delay:1s;border-color:rgba(0,123,255,0.06);" aria-hidden="true"></div>
+  <div class="hero-ring" style="width:920px;height:920px;top:50%;left:50%;animation-delay:2s;border-color:rgba(0,212,255,0.04);" aria-hidden="true"></div>
 
+  <!-- Badges flotantes — 7 especialidades -->
+  <!-- Lado izquierdo: 4 badges -->
+  <div class="tech-badge-float" style="top:14%;left:2%;--fb-dur:7s;--fb-delay:0s;" aria-hidden="true">
+    <span class="dot-b" style="background:#00d4ff;box-shadow:0 0 6px #00d4ff;"></span> 💻 PCs y Laptops
+  </div>
+  <div class="tech-badge-float" style="top:33%;left:2%;--fb-dur:9s;--fb-delay:0.8s;" aria-hidden="true">
+    <span class="dot-b" style="background:#007bff;box-shadow:0 0 6px #007bff;"></span> 🔒 Casas Inteligentes
+  </div>
+  <div class="tech-badge-float" style="top:54%;left:2%;--fb-dur:8s;--fb-delay:1.6s;" aria-hidden="true">
+    <span class="dot-b" style="background:#00d4ff;box-shadow:0 0 6px #00d4ff;"></span> 🔍 OSINT Avanzado
+  </div>
+  <div class="tech-badge-float" style="top:73%;left:2%;--fb-dur:10s;--fb-delay:2.4s;" aria-hidden="true">
+    <span class="dot-b" style="background:#007bff;box-shadow:0 0 6px #007bff;"></span> 📄 Gestión de Docs
+  </div>
+  <!-- Lado derecho: 3 badges -->
+  <div class="tech-badge-float" style="top:20%;right:2%;--fb-dur:8s;--fb-delay:0.4s;" aria-hidden="true">
+    <span class="dot-b" style="background:#007bff;box-shadow:0 0 6px #007bff;"></span> 📱 Celulares
+  </div>
+  <div class="tech-badge-float" style="top:44%;right:2%;--fb-dur:7s;--fb-delay:1.2s;" aria-hidden="true">
+    <span class="dot-b" style="background:#00d4ff;box-shadow:0 0 6px #00d4ff;"></span> 🛡️ Rescate de Datos
+  </div>
+  <div class="tech-badge-float" style="top:66%;right:2%;--fb-dur:9s;--fb-delay:2s;" aria-hidden="true">
+    <span class="dot-b" style="background:#007bff;box-shadow:0 0 6px #007bff;"></span> 🌐 Diseño Web
+  </div>
+
+  <!-- Contenido principal -->
   <div class="hero-content">
-    <div class="hero-badge">
+
+    <div class="hero-badge" data-aos="fade-down" data-aos-duration="700">
       <span class="dot"></span>
       Servicio Técnico en Arequipa, Perú
     </div>
-    <h1>
+
+    <h1 data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
       Soluciones Tecnológicas<br>
-      <span class="gradient-text">a tu Alcance</span>
+      <span class="gradient-text" id="hero-typed-title">a tu Alcance</span>
     </h1>
-    <p class="hero-subtitle">
-      Soporte Técnico para tu PC, Celular y Seguridad en Arequipa.
+
+    <p class="hero-subtitle" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+      Soporte Técnico para tu PC, Celular y Seguridad en Arequipa.<br>
       Sin términos difíciles, solo resultados reales y garantizados.
     </p>
-    <div class="hero-buttons">
+
+    <div class="hero-buttons" data-aos="fade-up" data-aos-duration="800" data-aos-delay="300">
       <a href="https://wa.me/51982247349?text=Hola%2C%20necesito%20ayuda%20técnica" target="_blank" rel="noopener" class="btn-primary">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         Hablar con un Experto
@@ -788,24 +934,26 @@ footer p { color: var(--muted); font-size: 0.85rem; }
       </a>
     </div>
 
-    <div class="hero-stats">
+    <!-- Stats bar -->
+    <div class="hero-stats" data-aos="fade-up" data-aos-duration="900" data-aos-delay="400">
       <div class="stat-item">
-        <div class="stat-num">100+</div>
+        <span class="stat-num" id="cnt-equipos">70+</span>
         <div class="stat-label">Equipos atendidos</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">7</div>
+        <span class="stat-num" id="cnt-especialidades">7+</span>
         <div class="stat-label">Especialidades técnicas</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">100%</div>
+        <span class="stat-num">100%</span>
         <div class="stat-label">Garantía de solución</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">⚡ Ya</div>
+        <span class="stat-num">⚡ Ya</span>
         <div class="stat-label">Te respondemos al instante</div>
       </div>
     </div>
+
   </div>
 </section>
 
@@ -1022,7 +1170,7 @@ footer p { color: var(--muted); font-size: 0.85rem; }
             <div class="contact-item-icon">📧</div>
             <div class="contact-item-text">
               <strong>Correo electrónico</strong>
-              <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4aeb1a5aab7b0a5b6b0b1b4a0ada3adb0a5a884a3a9a5ada8eaa7aba9">[email&#160;protected]</a>
+              <a href="/cdn-cgi/l/email-protection#9bf1eefaf5e8effae9efeeebfff2fcf2effaf7dbfcf6faf2f7b5f8f4f6" style="color:var(--cyan);text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'"><span class="__cf_email__" data-cfemail="dab0afbbb4a9aebba8aeafaabeb3bdb3aebbb69abdb7bbb3b6f4b9b5b7">[email&#160;protected]</span></a>
             </div>
           </div>
           <div class="contact-item">
@@ -1076,10 +1224,11 @@ footer p { color: var(--muted); font-size: 0.85rem; }
           <label for="problema">Describe tu problema</label>
           <textarea id="problema" placeholder="Ej: Mi laptop no enciende, cayó al suelo ayer y necesito saber si se puede recuperar..."></textarea>
         </div>
-        <button class="btn-submit" onclick="enviarWhatsApp()">
+        <a id="wa-form-btn" href="https://wa.me/51982247349" target="_blank" rel="noopener"
+          class="btn-submit" style="display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           Enviar por WhatsApp
-        </button>
+        </a>
       </div>
 
     </div>
@@ -1118,19 +1267,186 @@ footer p { color: var(--muted); font-size: 0.85rem; }
 </a>
 
 <!-- AOS JS -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://unpkg.com/aos@2.3.1/dist/aos.js">
+// ============================================
+// FORMULARIO WHATSAPP — handler del botón <a>
+// ============================================
+(function() {
+  var btn = document.getElementById('wa-form-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    var nombre   = (document.getElementById('nombre')   ? document.getElementById('nombre').value.trim()   : '');
+    var wa       = (document.getElementById('whatsapp') ? document.getElementById('whatsapp').value.trim() : '');
+    var svcEl    = document.getElementById('servicio');
+    var servicio = svcEl ? svcEl.value.trim() : '';
+    var problema = (document.getElementById('problema') ? document.getElementById('problema').value.trim() : '');
+    var ok = true;
+    function marcar(id, msg) {
+      ok = false;
+      var f = document.getElementById(id); if (!f) return;
+      f.style.border = '1.5px solid #ff4d6d';
+      var s = document.createElement('span');
+      s.style.cssText = 'color:#ff4d6d;font-size:0.78rem;display:block;margin-top:4px;';
+      s.textContent = msg;
+      f.parentNode.appendChild(s);
+    }
+    if (!nombre)   marcar('nombre',   'Ingresa tu nombre');
+    if (!wa)       marcar('whatsapp', 'Ingresa tu número');
+    if (!servicio) marcar('servicio', 'Selecciona un servicio');
+    if (!problema) marcar('problema', 'Describe tu problema');
+    if (!ok) return;
+    var msg = 'Hola TechData Solutions! 👋\n\n*Nombre:* ' + nombre + '\n*WhatsApp:* ' + wa + '\n*Servicio:* ' + servicio + '\n\n*Problema:*\n' + problema + '\n\n_Desde la página web._';
+    window.open('https://wa.me/51982247349?text=' + encodeURIComponent(msg), '_blank');
+  });
+})();
+</script>
 
 <script>
 // ============================================
 // AOS Init
 // ============================================
-// AOS init con fallback
+// ─── AOS Init ───
 try {
   AOS.init({ duration: 800, once: true, offset: 60, easing: 'ease-out-cubic', startEvent: 'DOMContentLoaded' });
-} catch(e) {
-  // AOS no disponible — elementos ya visibles por CSS fallback
-  console.log('AOS no cargó, usando fallback CSS');
+} catch(e) { console.log('AOS fallback'); }
+
+// ─── CANVAS PARTICLES ───
+(function() {
+  var canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W, H, particles = [], mouse = { x: -999, y: -999 };
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  canvas.addEventListener('mousemove', function(e) {
+    var r = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+  }, { passive: true });
+  canvas.addEventListener('mouseleave', function() { mouse.x = -999; mouse.y = -999; });
+
+  // Create particles
+  var COUNT = window.innerWidth < 768 ? 55 : 110;
+  for (var i = 0; i < COUNT; i++) {
+    particles.push({
+      x: Math.random() * (W || 1200),
+      y: Math.random() * (H || 800),
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.8 + 0.4,
+      alpha: Math.random() * 0.5 + 0.15,
+      color: Math.random() > 0.55 ? '0,212,255' : '0,123,255'
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Draw connections
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      // Mouse attraction
+      var dx = mouse.x - p.x, dy = mouse.y - p.y;
+      var dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 140) {
+        p.vx += dx * 0.00018;
+        p.vy += dy * 0.00018;
+      }
+
+      // Speed limit
+      var speed = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+      if (speed > 1.2) { p.vx *= 0.95; p.vy *= 0.95; }
+
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+
+      // Lines to nearby particles
+      for (var j = i + 1; j < particles.length; j++) {
+        var q = particles[j];
+        var ddx = p.x - q.x, ddy = p.y - q.y;
+        var d = Math.sqrt(ddx*ddx + ddy*ddy);
+        if (d < 110) {
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(' + p.color + ',' + (0.12 * (1 - d/110)) + ')';
+          ctx.lineWidth = 0.7;
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.stroke();
+        }
+      }
+
+      // Line to mouse
+      if (dist < 160) {
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(' + p.color + ',' + (0.35 * (1 - dist/160)) + ')';
+        ctx.lineWidth = 1;
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(mouse.x, mouse.y);
+        ctx.stroke();
+      }
+
+      // Draw particle
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + p.color + ',' + p.alpha + ')';
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ─── COUNTER ANIMATION ───
+function animateCounter(el) {
+  var target = parseInt(el.getAttribute('data-count'));
+  if (!target) return;
+  var duration = 1600;
+  var startTime = null;
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    var progress = Math.min((ts - startTime) / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 3);
+    var val = Math.floor(eased * target);
+    el.textContent = val + '+';
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target + '+';
+  }
+  requestAnimationFrame(step);
 }
+
+// Disparar contadores: inmediato en load + IntersectionObserver como respaldo
+var countersStarted = false;
+function startCounters() {
+  if (countersStarted) return;
+  countersStarted = true;
+  document.querySelectorAll('.stat-num[data-count]').forEach(animateCounter);
+}
+
+// Intentar inmediatamente cuando el DOM esté listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(startCounters, 400);
+  });
+} else {
+  setTimeout(startCounters, 400);
+}
+
+// IntersectionObserver como doble seguro
+try {
+  var io = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) startCounters();
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  var heroEl = document.getElementById('hero');
+  if (heroEl) io.observe(heroEl);
+} catch(e) { startCounters(); }
 
 // ============================================
 // Navbar scroll behavior
@@ -1169,56 +1485,67 @@ document.addEventListener('keydown', (e) => {
 // Form → WhatsApp
 // ============================================
 function enviarWhatsApp() {
-  const nombre = document.getElementById('nombre').value.trim();
-  const wa = document.getElementById('whatsapp').value.trim();
-  const servicio = document.getElementById('servicio').value;
-  const problema = document.getElementById('problema').value.trim();
+  var nombre   = (document.getElementById('nombre').value   || '').trim();
+  var wa       = (document.getElementById('whatsapp').value || '').trim();
+  var servicioEl = document.getElementById('servicio');
+  var servicio = servicioEl ? servicioEl.value : '';
+  var problema = (document.getElementById('problema').value || '').trim();
 
-  if (!nombre) { showError('nombre', 'Por favor ingresa tu nombre'); return; }
-  if (!wa) { showError('whatsapp', 'Por favor ingresa tu número de WhatsApp'); return; }
-  if (!servicio) { showError('servicio', 'Por favor selecciona un servicio'); return; }
-  if (!problema) { showError('problema', 'Por favor describe tu problema'); return; }
+  // Limpiar errores previos
+  ['nombre','whatsapp','servicio','problema'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.style.borderColor = ''; el.style.boxShadow = ''; }
+    var err = document.getElementById('err-' + id);
+    if (err) err.remove();
+  });
 
-  const msg = `¡Hola TechData Solutions! 👋
+  var valido = true;
+  if (!nombre)   { marcarError('nombre',   'Ingresa tu nombre');            valido = false; }
+  if (!wa)       { marcarError('whatsapp', 'Ingresa tu número de WhatsApp'); valido = false; }
+  if (!servicio) { marcarError('servicio', 'Selecciona un servicio');        valido = false; }
+  if (!problema) { marcarError('problema', 'Describe tu problema');          valido = false; }
+  if (!valido) return;
 
-*Nombre:* ${nombre}
-*Mi WhatsApp:* ${wa}
-*Servicio requerido:* ${servicio}
+  var texto = 'Hola TechData Solutions! 👋'
+    + '%0A%0A*Nombre:* ' + encodeURIComponent(nombre)
+    + '%0A*Mi WhatsApp:* ' + encodeURIComponent(wa)
+    + '%0A*Servicio:* ' + encodeURIComponent(servicio)
+    + '%0A%0A*Problema:*%0A' + encodeURIComponent(problema)
+    + '%0A%0A_Mensaje desde la página web._';
 
-*Descripción del problema:*
-${problema}
+  var url = 'https://wa.me/51982247349?text=' + texto;
 
-Los contacto desde su página web.`;
-
-  const url = `https://wa.me/51982247349?text=${encodeURIComponent(msg)}`;
-  window.open(url, '_blank', 'noopener');
+  // Abrir en nueva pestaña; si el navegador lo bloquea, redirigir aquí mismo
+  try {
+    var w = window.open(url, '_blank');
+    if (!w) window.location.href = url;
+  } catch(e) {
+    window.location.href = url;
+  }
 }
 
-function showError(fieldId, msg) {
-  const field = document.getElementById(fieldId);
-  field.style.borderColor = '#ff4d6d';
-  field.style.boxShadow = '0 0 0 3px rgba(255,77,109,0.15)';
-  field.focus();
-  const old = document.querySelector('.field-error');
-  if (old) old.remove();
-  const err = document.createElement('span');
-  err.className = 'field-error';
-  err.style.cssText = 'color:#ff4d6d;font-size:0.8rem;display:block;margin-top:6px;';
-  err.textContent = msg;
-  field.parentNode.appendChild(err);
-  field.addEventListener('input', () => {
-    field.style.borderColor = '';
-    field.style.boxShadow = '';
-    err.remove();
+function marcarError(id, msg) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.style.borderColor = '#ff4d6d';
+  el.style.boxShadow = '0 0 0 3px rgba(255,77,109,0.18)';
+  el.focus();
+  var prev = document.getElementById('err-' + id);
+  if (prev) prev.remove();
+  var span = document.createElement('span');
+  span.id = 'err-' + id;
+  span.style.cssText = 'color:#ff4d6d;font-size:0.78rem;display:block;margin-top:5px;';
+  span.textContent = msg;
+  el.parentNode.appendChild(span);
+  el.addEventListener('input', function() {
+    el.style.borderColor = ''; el.style.boxShadow = '';
+    var e = document.getElementById('err-' + id); if (e) e.remove();
   }, { once: true });
 }
 
+
+// showError reemplazado por marcarError
+
 // ============================================
 // Smooth scroll for nav links
-// ============================================
-document.querySelectorAll('a[href^="#"]').forEach(link => {
-  link.addEventListener('click', (e) => {
-    const id = link.getAttribute('href');
-    if (id === '#') return;
-    const target = document.querySelector(id);
-    
+// =======
